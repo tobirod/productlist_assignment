@@ -67,7 +67,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             label={categoryName}
             icon={categoryIcon}
             sx={{
-              backgroundColor: "thistle",
+              backgroundColor: "wheat",
               borderRadius: "16px",
               padding: "2px 8px",
               fontSize: "0.8rem",

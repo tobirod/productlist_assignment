@@ -24,7 +24,7 @@ const Logo = styled("img")({
 const TopBar: React.FC = () => {
   return (
     <StyledAppBar>
-      <Toolbar>
+      <Toolbar sx={{ width: "100%", display: "flex", justifyContent: { xs: "flex-start", sm: "center" }}} >
         <Logo src="/logo.svg" alt="Logo" onClick={() => window.location.reload() }/>
         <Box>
           <Typography
