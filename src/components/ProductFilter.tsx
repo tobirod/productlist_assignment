@@ -15,22 +15,30 @@ interface ProductFilterProps {
 
 const ProductFilter: React.FC<ProductFilterProps> = ({ categories, selectedCategory, searchQuery, onSelectCategory, onSearchQueryChange }) => {
     return (
-        <Grid container spacing={2} sx={{ padding: 2 }} maxWidth={1200} margin="auto">
+        <Grid container spacing={2} sx={{ maxWidth: 1200, padding: 2, margin: "auto" }}>
             <Grid size={{ xs: 12, sm: 6, md: 8 }}>
                 <TextField
-                label="Search"
-                variant="outlined"
-                value={searchQuery}
-                onChange={(e) => onSearchQueryChange(e.target.value)}
-                fullWidth
-                slotProps={{
-                    input: {
-                        endAdornment: searchQuery ? (
-                          <IconButton onClick={() => onSearchQueryChange("")} size="small">
-                            <ClearIcon />
-                          </IconButton>
-                        ) : null,
-                      },
+                    label="Search"
+                    variant="outlined"
+                    value={searchQuery}
+                    onChange={(e) => onSearchQueryChange(e.target.value)}
+                    fullWidth
+                    sx={{ 
+                        backgroundColor: "white",
+                        borderRadius: "4px",
+                        "& input:-webkit-autofill": {
+                            backgroundColor: "white !important",
+                            WebkitBoxShadow: "0 0 0px 1000px white inset !important",
+                        },
+                    }}
+                    slotProps={{
+                        input: {
+                            endAdornment: searchQuery ? (
+                            <IconButton onClick={() => onSearchQueryChange("")} size="small">
+                                <ClearIcon />
+                            </IconButton>
+                            ) : null,
+                        },
                 }}
             />
             </Grid>
@@ -44,7 +52,17 @@ const ProductFilter: React.FC<ProductFilterProps> = ({ categories, selectedCateg
                             label="Category"
                             variant="outlined"
                             value={selectedCategory}
+                            sx={{ backgroundColor: "white", borderRadius: "4px" }}
                             onChange={(e) => onSelectCategory(e.target.value as string)}
+                            MenuProps={{
+                                disableScrollLock: true,
+                                PaperProps: {
+                                    style: {
+                                        maxHeight: 300,
+                                        overflowY: "auto",
+                                    },
+                                },
+                            }}
                         >
                             {categories.map((category) => (
                                 <MenuItem key={category.slug} value={category.slug} selected={category.slug === selectedCategory}>

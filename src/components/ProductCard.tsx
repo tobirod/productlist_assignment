@@ -12,7 +12,7 @@ interface ProductCardProps {
 const StyledCard = styled(Card)({
   display: "flex",
   flexDirection: "column",
-  height: "100%",
+  height: "520px",
   flexGrow: 1,
 });
 
