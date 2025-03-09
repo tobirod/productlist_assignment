@@ -1,10 +1,10 @@
 import { useContext } from "react";
-import { styled } from "@mui/material/styles";
 import Grid from '@mui/material/Grid2';
-import { Box, CircularProgress, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { ProductContext } from "../context/ProductContext";
 import ProductCard from "./ProductCard";
 import ProductFilter from "./ProductFilter";
+import SkeletonCard from "./SkeletonCard";
 
 const ProductList = () => {
   const context = useContext(ProductContext);
@@ -13,17 +13,7 @@ const ProductList = () => {
     throw new Error("ProductList must be used within a ProductProvider");
   }
 
-  const {products, categories, loading, selectedCategory, searchQuery, handleCategoryChange, handleSearchQueryChange, lastProductRef } = context;
-
-  const StyledBox = styled(Box)({
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100%",
-    width: "100%",
-    opacity: loading ? 1 : 0,
-    transition: "opacity 2s ease-in-out",
-  });
+  const {products, categories, loading, initialLoading, selectedCategory, searchQuery, handleCategoryChange, handleSearchQueryChange, lastProductRef } = context;
 
   return (
     <>
@@ -35,21 +25,21 @@ const ProductList = () => {
         onSearchQueryChange={handleSearchQueryChange}
       />
       <Grid container spacing={2} padding={2} maxWidth={1200} margin={"auto"}>
-        {products.map((product, index) => (
-          <Grid 
-            key={`${index}-${product.sku}`}
-            ref={index === products.length - 1 ? lastProductRef : null}
-            size={{ xs: 12, sm: 6, md: 4 }}>
-            <ProductCard product={product} />
+        {initialLoading || loading ? (
+        [...Array(6)].map((_, index) => (
+          <Grid key={index} size={{ xs: 12, sm: 6, md: 4 }}>
+            <SkeletonCard />
           </Grid>
-        ))}
-        {loading && (
-          <Grid
-            size={{ xs: 12, sm: 6, md: 4 }}>
-            <StyledBox>
-              <CircularProgress sx={{color: "#333"}} />
-            </StyledBox>
-          </Grid>
+        ))) : (
+          products.map((product, index) => (
+            <Grid
+              key={`${index}-${product.sku}`}
+              ref={index === products.length - 1 ? lastProductRef : null}
+              size={{ xs: 12, sm: 6, md: 4 }}
+            >
+              <ProductCard product={product} />
+            </Grid>
+          ))
         )}
         {products.length === 0 && !loading && (
           <Grid sx={{ padding: 20, textAlign: "center", width: "100%" }}>

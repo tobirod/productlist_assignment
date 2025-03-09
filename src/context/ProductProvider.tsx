@@ -11,6 +11,7 @@ const ProductProvider = ({ children }: { children: ReactNode }) => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [skip, setSkip] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
   const limit = 20;
 
@@ -20,11 +21,13 @@ const ProductProvider = ({ children }: { children: ReactNode }) => {
   const debouncedCategory = useDebounce(selectedCategory, 200);
 
   const handleSearchQueryChange = (query: string) => {
+    setLoading(true);
     setSearchQuery(query);
     setSkip(0);
   };
 
   const handleCategoryChange = (category: string) => {
+    setLoading(true);
     setSelectedCategory(category);
     setSkip(0);
   };
@@ -48,7 +51,6 @@ const ProductProvider = ({ children }: { children: ReactNode }) => {
   const loadProducts = useCallback(async () => {
     if (loadingRef.current) return;
     loadingRef.current = true;
-    setLoading(true);
   
     const newProducts = await fetchProducts(limit, skip, debouncedSearchQuery, debouncedCategory);
 
@@ -64,6 +66,7 @@ const ProductProvider = ({ children }: { children: ReactNode }) => {
 
     loadingRef.current = false;
     setLoading(false);
+    setInitialLoading(false);
   }, [limit, skip, debouncedSearchQuery, debouncedCategory]);
   
   useEffect(() => {
@@ -93,7 +96,7 @@ const ProductProvider = ({ children }: { children: ReactNode }) => {
   
 
   return (
-    <ProductContext.Provider value={{ products, categories, loading, selectedCategory, searchQuery, handleCategoryChange, handleSearchQueryChange, lastProductRef }}>
+    <ProductContext.Provider value={{ products, categories, loading, initialLoading, selectedCategory, searchQuery, handleCategoryChange, handleSearchQueryChange, lastProductRef }}>
       {children}
     </ProductContext.Provider>
   );

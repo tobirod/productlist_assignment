@@ -5,6 +5,7 @@ interface ProductContextType {
   products: Product[];
   categories: Category[];
   loading: boolean;
+  initialLoading: boolean;
   selectedCategory: string;
   searchQuery: string;
   handleCategoryChange: (category: string) => void;
