@@ -17,6 +17,7 @@ const ProductProvider = ({ children }: { children: ReactNode }) => {
   const observer = useRef<IntersectionObserver | null>(null);
   const loadingRef = useRef(false);
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
+  const debouncedCategory = useDebounce(selectedCategory, 200);
 
   const handleSearchQueryChange = (query: string) => {
     setSearchQuery(query);
@@ -49,7 +50,7 @@ const ProductProvider = ({ children }: { children: ReactNode }) => {
     loadingRef.current = true;
     setLoading(true);
   
-    const newProducts = await fetchProducts(limit, skip, debouncedSearchQuery, selectedCategory);
+    const newProducts = await fetchProducts(limit, skip, debouncedSearchQuery, debouncedCategory);
 
     if (newProducts.length < limit) {
       setHasMore(false);
@@ -63,7 +64,7 @@ const ProductProvider = ({ children }: { children: ReactNode }) => {
 
     loadingRef.current = false;
     setLoading(false);
-  }, [limit, skip, debouncedSearchQuery, selectedCategory]);
+  }, [limit, skip, debouncedSearchQuery, debouncedCategory]);
   
   useEffect(() => {
     loadProducts();

@@ -26,7 +26,7 @@ const ProductList = () => {
   });
 
   return (
-    <div>
+    <>
       <ProductFilter
         categories={categories}
         selectedCategory={selectedCategory}
@@ -66,7 +66,7 @@ const ProductList = () => {
           </Grid>
         )}
       </Grid>
-    </div>
+    </>
   );
 };
 

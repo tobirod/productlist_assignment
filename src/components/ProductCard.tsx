@@ -1,60 +1,80 @@
-import React from "react";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
-import Typography from "@mui/material/Typography";
+import React, { useContext } from "react";
+import { Box, Card, CardContent, CardMedia, Chip, Divider, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { Product } from "../services/api";
+import { Category, Product } from "../types";
+import { ProductContext } from "../context/ProductContext";
+import { getCategoryIcon } from "../utils/getCategoryIcon";
 
 interface ProductCardProps {
   product: Product;
 }
 
 const StyledCard = styled(Card)({
-  display: 'flex',
-  flexDirection: 'column',
-  height: '100%',
+  display: "flex",
+  flexDirection: "column",
+  height: "100%",
+  flexGrow: 1,
 });
 
 const StyledCardContent = styled(CardContent)({
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "space-between",
   flexGrow: 1,
-  display: 'flex',
-  gap: 20,
-  flexDirection: 'column',
-  justifyContent: 'space-between',
 });
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+  const context = useContext(ProductContext);
+
+  if (!context) {
+    throw new Error("ProductCard must be used within a ProductProvider");
+  }
+
+  const { categories } = context;
+  const categoryName = categories.find((c: Category) => c.slug === product.category)?.name || "";
+  const categoryIcon = getCategoryIcon(product.category);
+
   return (
     <StyledCard>
       {product.images?.[0] && (
         <CardMedia
           component="img"
-          height="140"
           image={product.images[0]}
           alt={product.title}
+          loading="lazy"
+          sx={{ height: 200, objectFit: "contain" }}
         />
       )}
       <StyledCardContent>
-        <div>
+        <Box>
           <Typography gutterBottom variant="h5" component="div">
             {product.title}
           </Typography>
           <Typography variant="body2" color="text.secondary">
             {product.description}
           </Typography>
-        </div>
-        <div>
+        </Box>
+
+        <Box sx={{ marginTop: "20px" }}>
           <Typography variant="body2" color="text.secondary">
             <strong>Price:</strong> ${product.price}
           </Typography>
           <Typography variant="body2" color="text.secondary">
             <strong>Brand:</strong> {product.brand}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
-            <strong>Category:</strong> {product.category}
-          </Typography>
-        </div>
+          <Divider sx={{ my: 2 }} />
+          <Chip
+            label={categoryName}
+            icon={categoryIcon}
+            sx={{
+              backgroundColor: "thistle",
+              borderRadius: "16px",
+              padding: "2px 8px",
+              fontSize: "0.8rem",
+              fontWeight: 600,
+            }}
+          />
+        </Box>
       </StyledCardContent>
     </StyledCard>
   );
