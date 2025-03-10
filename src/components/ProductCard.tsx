@@ -41,7 +41,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           component="img"
           image={product.images[0]}
           alt={product.title}
-          loading="lazy"
           sx={{ height: 200, objectFit: "contain" }}
         />
       )}
