@@ -66,7 +66,7 @@ const ProductFilter: React.FC<ProductFilterProps> = ({ categories, selectedCateg
                         >
                             {categories.map((category) => (
                                 <MenuItem key={category.slug} value={category.slug} selected={category.slug === selectedCategory}>
-                                    {category.name}
+                                    {category.displayName}
                                 </MenuItem>
                             ))}
                         </Select>

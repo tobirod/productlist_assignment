@@ -14,7 +14,7 @@ export interface Product {
 }
 
 export interface Category {
-    slug: string;
-    name: string;
-    url: string;
+  id: number;
+  slug: string;
+  displayName: string;
 }

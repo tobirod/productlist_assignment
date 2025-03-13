@@ -9,7 +9,7 @@ const ProductProvider = ({ children }: { children: ReactNode }) => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [skip, setSkip] = useState<number>(0);
+  const [page, setPage] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
@@ -21,54 +21,68 @@ const ProductProvider = ({ children }: { children: ReactNode }) => {
   const debouncedCategory = useDebounce(selectedCategory, 200);
 
   const handleSearchQueryChange = (query: string) => {
+    console.log('query:', query)
     setLoading(true);
     setSearchQuery(query);
-    setSkip(0);
+    setPage(0);
   };
 
   const handleCategoryChange = (category: string) => {
+    console.log("categoryName:", category)
     setLoading(true);
     setSelectedCategory(category);
-    setSkip(0);
+    setPage(0);
   };
 
   useEffect(() => {
     const loadCategories = async () => {
-      const allCategories = await fetchCategories();
-      setCategories(allCategories);
+      try {
+        const allCategories = await fetchCategories();
+        console.log("initialCategories:", allCategories)
+        setCategories(allCategories);
+      } catch (error) {
+        console.error("Error loading categories:", error);
+      }
     };
 
     const loadInitialProducts = async () => {
-      const initialProducts = await fetchProducts();
-      setProducts(initialProducts);
+      try {
+        const initialProducts = await fetchProducts(limit, 0);
+        console.log("initialProducts:", initialProducts)
+        setProducts(initialProducts.content);
+      } catch (error) {
+        console.error("Error loading initial products:", error);
+      }
     };
     
     loadCategories();
     loadInitialProducts();
   }, []);
 
-  // Could implement a cache but for the sake of simplicity, we'll just fetch the data again.
   const loadProducts = useCallback(async () => {
     if (loadingRef.current) return;
     loadingRef.current = true;
-  
-    const newProducts = await fetchProducts(limit, skip, debouncedSearchQuery, debouncedCategory);
 
-    if (newProducts.length < limit) {
-      setHasMore(false);
+    try {
+      const newProducts = await fetchProducts(limit, page, debouncedSearchQuery, debouncedCategory);
+      if (newProducts.content.length < limit) {
+        setHasMore(false);
+      }
+
+      if (page > 0) {
+        setProducts((prev) => [...prev, ...newProducts.content]);
+      } else {
+        setProducts(newProducts.content);
+      }
+    } catch (error) {
+      console.error("Error loading products:", error);
+    } finally {
+      loadingRef.current = false;
+      setLoading(false);
+      setInitialLoading(false);
     }
+  }, [limit, page, debouncedSearchQuery, debouncedCategory]);
 
-    if (skip > 0) {
-      setProducts((prev) => [...prev, ...newProducts]);
-    } else {
-      setProducts(newProducts);
-    }
-
-    loadingRef.current = false;
-    setLoading(false);
-    setInitialLoading(false);
-  }, [limit, skip, debouncedSearchQuery, debouncedCategory]);
-  
   useEffect(() => {
     loadProducts();
   }, [loadProducts]);
@@ -80,7 +94,7 @@ const ProductProvider = ({ children }: { children: ReactNode }) => {
       if (!observer.current) {
         observer.current = new IntersectionObserver((entries) => {
           if (entries[0].isIntersecting) {
-            setSkip((prev) => prev + limit);
+            setPage((prev) => prev + 1);
           }
         });
       }
@@ -93,7 +107,6 @@ const ProductProvider = ({ children }: { children: ReactNode }) => {
     },
     [hasMore, loading]
   );
-  
 
   return (
     <ProductContext.Provider value={{ products, categories, loading, initialLoading, selectedCategory, searchQuery, handleCategoryChange, handleSearchQueryChange, lastProductRef }}>

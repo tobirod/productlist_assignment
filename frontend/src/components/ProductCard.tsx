@@ -31,7 +31,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   }
 
   const { categories } = context;
-  const categoryName = categories.find((c: Category) => c.slug === product.category)?.name || "";
+  const categoryName = categories.find((c: Category) => c.slug === product.category)?.displayName || "";
   const categoryIcon = getCategoryIcon(product.category);
 
   return (
